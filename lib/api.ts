@@ -17,16 +17,31 @@ export async function signupUser(data: {
 
     if (!response.ok) {
       const errorData = await response.json();
+      
+      // Handle specific HTTP status codes with user-friendly messages
+      if (response.status === 409) {
+        throw new Error("This email is already registered. Please use a different email or try signing in.");
+      } else if (response.status === 400) {
+        throw new Error(errorData.message || "Invalid input. Please check your details.");
+      } else if (response.status === 500) {
+        throw new Error("Server error. Please try again later.");
+      }
+      
       throw new Error(errorData.message || "Signup failed");
     }
 
     return await response.json();
-  } catch (error) {
+  } catch (error: any) {
+    // If it's already our custom error, re-throw it
+    if (error.message) {
+      throw error;
+    }
+    
     // This catches:
     // - CORS issues
     // - Server down
     // - Wrong port
     // - Network failure
-    throw new Error("Unable to connect to server");
+    throw new Error("Unable to connect to server. Please check your internet connection.");
   }
 }

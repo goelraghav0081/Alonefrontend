@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signupUser } from "@/lib/api";
+import "./signup.css";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -31,41 +32,85 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "50px auto" }}>
-      <h2>Create Account</h2>
+    <div className="signup-container">
+      <div className="signup-card">
+        <div className="signup-header">
+          <h1>Create Account</h1>
+          <p className="subtitle">Join us today and get started</p>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <form onSubmit={handleSubmit} className="signup-form">
+          <div className="form-group">
+            <label htmlFor="name">Full Name</label>
+            <input
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="form-input"
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
+            />
+          </div>
 
-        <button disabled={loading}>
-          {loading ? "Creating..." : "Sign Up"}
-        </button>
-      </form>
+          <button type="submit" disabled={loading} className="signup-button">
+            {loading ? (
+              <span className="button-loading">
+                <span className="spinner"></span>
+                Creating Account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+        {error && (
+          <div className="alert alert-error">
+            <span className="alert-icon">✕</span>
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="alert alert-success">
+            <span className="alert-icon">✓</span>
+            {success}
+          </div>
+        )}
+
+        <p className="signin-link">
+          Already have an account? <a href="/login">Sign In</a>
+        </p>
+      </div>
+
+      <div className="decoration-circle circle-1"></div>
+      <div className="decoration-circle circle-2"></div>
     </div>
   );
 }
