@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { signupUser } from "@/lib/api";
-import "./signup.css";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { loginUser } from "@/lib/api";
+import "./signin.css";
 
-export default function SignupPage() {
-  const [name, setName] = useState("");
+export default function SigninPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      router.push("/dashboard");
+    }
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -19,11 +29,23 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      await signupUser({ name, email, password });
-      setSuccess("Signup successful. You can now login.");
-      setName("");
+      const response = await loginUser({ email, password });
+      setSuccess("Login successful! Redirecting...");
+      
+      // Store user data in localStorage
+      localStorage.setItem("user", JSON.stringify({
+        name: response.name || response.user?.name || email,
+        email: response.email || email,
+        token: response.token || "user_token"
+      }));
+      
       setEmail("");
       setPassword("");
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 500);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -32,27 +54,14 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="signup-container">
-      <div className="signup-card">
-        <div className="signup-header">
-          <h1>Create Account</h1>
-          <p className="subtitle">Join us today and get started</p>
+    <div className="signin-container">
+      <div className="signin-card">
+        <div className="signin-header">
+          <h1>Welcome Back</h1>
+          <p className="subtitle">Sign in to your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="signup-form">
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="John Doe"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="form-input"
-            />
-          </div>
-
+        <form onSubmit={handleSubmit} className="signin-form">
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
             <input
@@ -79,14 +88,14 @@ export default function SignupPage() {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="signup-button">
+          <button type="submit" disabled={loading} className="signin-button">
             {loading ? (
               <span className="button-loading">
                 <span className="spinner"></span>
-                Creating Account...
+                Signing In...
               </span>
             ) : (
-              "Create Account"
+              "Sign In"
             )}
           </button>
         </form>
@@ -104,13 +113,13 @@ export default function SignupPage() {
           </div>
         )}
 
-        <p className="signin-link">
-          Already have an account? <a href="/login">Sign In</a>
-        </p>
+        <div className="signup-link">
+          Don't have an account?{" "}
+          <Link href="/signup">
+            Create one here
+          </Link>
+        </div>
       </div>
-
-      <div className="decoration-circle circle-1"></div>
-      <div className="decoration-circle circle-2"></div>
     </div>
   );
 }
