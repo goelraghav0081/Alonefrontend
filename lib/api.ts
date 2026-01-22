@@ -45,3 +45,50 @@ export async function signupUser(data: {
     throw new Error("Unable to connect to server. Please check your internet connection.");
   }
 }
+
+export async function loginUser(data: {
+  email: string;
+  password: string;
+}) {
+  try {
+    const response = await fetch(
+      "http://localhost:3001/api/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      
+      // Handle specific HTTP status codes with user-friendly messages
+      if (response.status === 401) {
+        throw new Error("Invalid email or password. Please try again.");
+      } else if (response.status === 400) {
+        throw new Error(errorData.message || "Invalid input. Please check your details.");
+      } else if (response.status === 500) {
+        throw new Error("Server error. Please try again later.");
+      }
+      
+      throw new Error(errorData.message || "Login failed");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    // If it's already our custom error, re-throw it
+    if (error.message) {
+      throw error;
+    }
+    
+    // This catches:
+    // - CORS issues
+    // - Server down
+    // - Wrong port
+    // - Network failure
+    throw new Error("Unable to connect to server. Please check your internet connection.");
+  }
+}

@@ -1,0 +1,274 @@
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ================= BACKGROUND ================= */
+.signin-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    120deg,
+    #000000,
+    #111111,
+    #1a1a1a,
+    #000000
+  );
+  background-size: 300% 300%;
+  animation: bgMove 14s ease infinite;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ================= CARD ================= */
+.signin-card {
+  width: 420px;
+  padding: 56px 48px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 35px 80px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  animation: cardEnter 0.7s ease;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ================= HEADER ================= */
+.signin-header {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.signin-header h1 {
+  font-size: 34px;
+  font-weight: 700;
+  background: linear-gradient(
+    180deg,
+    #ffffff,
+    #bfbfbf
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ================= FORM ================= */
+.signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ================= INPUT ================= */
+.form-input {
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111111;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus {
+  outline: none;
+  transform: scale(1.03);
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.35),
+    0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* ================= BUTTON ================= */
+.signin-button {
+  margin-top: 16px;
+  height: 54px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #000000;
+  background: linear-gradient(
+    180deg,
+    #ffffff,
+    #d4d4d4
+  );
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.signin-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.9),
+    transparent
+  );
+  transform: translateX(-120%);
+}
+
+.signin-button:hover::after {
+  animation: shine 0.9s ease;
+}
+
+@keyframes shine {
+  to { transform: translateX(120%); }
+}
+
+.signin-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 50px rgba(255, 255, 255, 0.25),
+    0 10px 30px rgba(0, 0, 0, 0.9);
+}
+
+.signin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ================= ALERTS ================= */
+.alert {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.alert-success {
+  color: #095400;
+  background: #fffffff2;
+  margin: 27px 0px;
+  padding: 13px;
+  animation: successPop 0.35s ease;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes successPop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000000;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+}
+
+.button-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= SIGNUP LINK ================= */
+.signup-link {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.signup-link a {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+  color: #e0e0e0;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 480px) {
+  .signin-card {
+    width: 90%;
+    padding: 42px 26px;
+  }
+
+  .signin-header h1 {
+    font-size: 26px;
+  }
+}
