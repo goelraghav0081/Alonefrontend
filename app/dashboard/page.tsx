@@ -1,56 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/authContext";
+import { ProtectedRoute } from "@/lib/protectedRoute";
 import "./dashboard.css";
-
-interface User {
-  name: string;
-  email: string;
-  token: string;
-}
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check if user is logged in
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      // Redirect to login if not authenticated
-      router.push("/login");
-      return;
-    }
-
-    try {
-      const parsedUser = JSON.parse(userData);
-      setUser(parsedUser);
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-      router.push("/login");
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    logout();
     router.push("/login");
   };
 
-  if (loading) {
-    return (
-      <div className="dashboard-container">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  return (
+    <ProtectedRoute>
+      <DashboardContent user={user} onLogout={handleLogout} />
+    </ProtectedRoute>
+  );
+}
 
+function DashboardContent({
+  user,
+  onLogout,
+}: {
+  user: { name: string; email: string } | null;
+  onLogout: () => void;
+}) {
   if (!user) {
     return null;
   }
@@ -60,7 +37,7 @@ export default function DashboardPage() {
       <div className="dashboard-header">
         <div className="header-content">
           <h1>Welcome, {user.name}! 👋</h1>
-          <button onClick={handleLogout} className="logout-button">
+          <button onClick={onLogout} className="logout-button">
             Logout
           </button>
         </div>

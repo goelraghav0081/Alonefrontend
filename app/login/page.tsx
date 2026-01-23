@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginUser } from "@/lib/api";
+import { useAuth } from "@/lib/authContext";
 import "./signin.css";
 
 export default function SigninPage() {
   const router = useRouter();
+  const { isAuthenticated, setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,11 +18,10 @@ export default function SigninPage() {
 
   useEffect(() => {
     // Check if user is already logged in
-    const userData = localStorage.getItem("user");
-    if (userData) {
+    if (isAuthenticated) {
       router.push("/dashboard");
     }
-  }, [router]);
+  }, [isAuthenticated, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,11 +34,12 @@ export default function SigninPage() {
       setSuccess("Login successful! Redirecting...");
       
       // Store user data in localStorage
-      localStorage.setItem("user", JSON.stringify({
+      const userData = {
         name: response.name || response.user?.name || email,
         email: response.email || email,
-        token: response.token || "user_token"
-      }));
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
       
       setEmail("");
       setPassword("");
