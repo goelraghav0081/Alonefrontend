@@ -77,7 +77,17 @@ export async function loginUser(data: {
       throw new Error(errorData.message || "Login failed");
     }
 
-    return await response.json();
+    const jsonData = await response.json();
+    
+    // Import tokenManager here to avoid circular dependency
+    const { tokenManager } = await import("./tokenManager");
+    
+    // Store tokens from response
+    if (jsonData.accessToken && jsonData.refreshToken) {
+      tokenManager.setTokens(jsonData.accessToken, jsonData.refreshToken);
+    }
+    
+    return jsonData;
   } catch (error: any) {
     // If it's already our custom error, re-throw it
     if (error.message) {
