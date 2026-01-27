@@ -1,4 +1,3 @@
-// Auth Context - manages authentication state across the app
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode } from "react";
@@ -26,32 +25,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Restore session on page reload
     const storedUser = localStorage.getItem("user");
-    const hasToken = tokenManager.hasToken();
+    const hasAccessToken = tokenManager.isAuthenticated();
 
-    if (storedUser && hasToken) {
+    if (storedUser && hasAccessToken) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error("Error parsing stored user:", error);
-        tokenManager.clearTokens();
+        console.error("Failed to parse stored user:", error);
+        tokenManager.clear();
       }
     }
 
     setIsLoading(false);
   }, []);
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
-    tokenManager.clearTokens();
+    tokenManager.clear();
+
+    // Optional but recommended: tell backend to revoke refresh token
+    await fetch("http://localhost:3001/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user && tokenManager.hasToken(),
+        isAuthenticated: !!user && tokenManager.isAuthenticated(),
         isLoading,
         logout,
         setUser,

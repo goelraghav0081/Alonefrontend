@@ -58,47 +58,45 @@ export async function loginUser(data: {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // ✅ REQUIRED for cookies
         body: JSON.stringify(data),
       }
     );
 
     if (!response.ok) {
       const errorData = await response.json();
-      
-      // Handle specific HTTP status codes with user-friendly messages
+
       if (response.status === 401) {
         throw new Error("Invalid email or password. Please try again.");
       } else if (response.status === 400) {
-        throw new Error(errorData.message || "Invalid input. Please check your details.");
+        throw new Error(
+          errorData.message || "Invalid input. Please check your details."
+        );
       } else if (response.status === 500) {
         throw new Error("Server error. Please try again later.");
       }
-      
+
       throw new Error(errorData.message || "Login failed");
     }
 
     const jsonData = await response.json();
-    
+
     // Import tokenManager here to avoid circular dependency
     const { tokenManager } = await import("./tokenManager");
-    
-    // Store tokens from response
-    if (jsonData.accessToken && jsonData.refreshToken) {
-      tokenManager.setTokens(jsonData.accessToken, jsonData.refreshToken);
+
+    // ✅ Store ONLY access token
+    if (jsonData.accessToken) {
+      tokenManager.setAccessToken(jsonData.accessToken);
     }
-    
+
     return jsonData;
   } catch (error: any) {
-    // If it's already our custom error, re-throw it
     if (error.message) {
       throw error;
     }
-    
-    // This catches:
-    // - CORS issues
-    // - Server down
-    // - Wrong port
-    // - Network failure
-    throw new Error("Unable to connect to server. Please check your internet connection.");
+
+    throw new Error(
+      "Unable to connect to server. Please check your internet connection."
+    );
   }
 }
